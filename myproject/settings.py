@@ -21,9 +21,7 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
-# print("API_KEY:",OPENAI_API_KEY)
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-1$%y6-+k_x1k)x7##9lo)s^d0c_+on7ef5!hjjc9#)qrz4w9hq'

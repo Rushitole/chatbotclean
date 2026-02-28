@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from .models import ChatMessage
 
 
 def chat_page(request):
@@ -15,6 +16,7 @@ def chat_stream(request):
         try:
             data = json.loads(request.body)
             user_message = data.get("message", "")
+
 
             response = requests.post(
     "http://127.0.0.1:11434/api/generate",
@@ -36,6 +38,13 @@ def chat_stream(request):
             if response.status_code == 200:
                 result = response.json()
                 bot_reply = result.get("response", "")
+
+
+                ChatMessage.objects.create(
+                    user_message=user_message,
+                    bot_response=bot_reply
+                )
+
                 return JsonResponse({"reply": bot_reply})
 
             else:
