@@ -6,6 +6,10 @@ from django.shortcuts import render
 from .models import ChatMessage
 
 
+
+def home(request):
+    return render(request,'home.html')
+
 def chat_page(request):
     return render(request, "chat.html")
 

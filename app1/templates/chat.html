@@ -2,85 +2,96 @@
 <html>
 <head>
     <title>Rushi AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {%csrf_token %}
      
     <style>
-        body {
-            margin: 0;
-            background: #111;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: sans-serif;
-        }
 
-        .chat-container {
-            width: 400px;
-            background: #1c1c1c;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
+       body {
+    margin: 0;
+    padding: 0;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+}
 
-        .chat-container h2 {
-            color: white;
-            text-align: center;
-        }
+.chat-container {
+    width: 100%;
+    max-width: 500px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: #121212;
+    border-radius: 0;
+}
 
-        .chat-box {
-            height: 300px;
-            overflow-y: auto;
-            background: #222;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
+.header {
+    padding: 15px;
+    text-align: center;
+    font-weight: bold;
+    background:#000;
+    color: #00ffcc;
+    font-size: 18px;
+    border-bottom: 1px solid #222;
 
-        .user-msg {
-            text-align: right;
-            color: #4da6ff;
-            margin: 6px 0;
-        }
+    display:flex;
+    justify-content:center;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+}
 
-        .bot-msg {
-            text-align: left;
-            color: #ccc;
-            margin: 6px 0;
-        }
+.chat-box {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #181818;
+}
 
-        .input-area {
-            display: flex;
-        }
+.user-msg {
+    text-align: right;
+    margin: 5px 0;
+    color: #00ffcc;
+}
 
-        input {
-            flex: 1;
-            padding: 10px;
-            border-radius: 6px;
-            border: none;
-            outline: none;
-        }
+.bot-msg {
+    text-align: left;
+    margin: 5px 0;
+    color: white;
+}
 
-        button {
-            padding: 10px 15px;
-            margin-left: 5px;
-            border-radius: 6px;
-            border: none;
-            background: #4da6ff;
-            color: white;
-            cursor: pointer;
-        }
+.input-area {
+    display: flex;
+    padding: 10px;
+    background: #1a1a1a;
+}
 
-        button:hover {
-            background: #1a8cff;
-        }
+.input-area input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
+
+.input-area button {
+    margin-left: 8px;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    background: #00c896;
+    color: white;
+    cursor: pointer;
+}
     </style>
 </head>
 
 <body>
 
 <div class="chat-container">
-    <h2>🤖 Rushi's AI Bot</h2>
+    <div class="header">
+        <span>🤖</span> Rushi's AI Bot
+    </div>
 
     <div id="chatBox" class="chat-box"></div>
 
@@ -94,30 +105,67 @@
 document.getElementById("sendBtn").addEventListener("click", sendMessage);
 
 function sendMessage() {
+
     let input = document.getElementById("messageInput");
     let message = input.value.trim();
+
     if (!message) return;
 
     appendMessage("user", message);
     input.value = "";
 
     fetch("/chat/stream/", {
-    method: "POST",
-    headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": "{{ csrf_token }}"
-    },
-    body: JSON.stringify({ message: message })
-})
-    .then(response => response.json())
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Network response error");
+        }
+        return response.json();
+    })
     .then(data => {
-        appendMessage("bot", data.reply);
+        if (data.reply) {
+            appendMessage("bot", data.reply);
+        } else {
+            appendMessage("bot", "No reply received.");
+        }
     })
     .catch(error => {
+        console.error("Error:", error);
         appendMessage("bot", "Error connecting to server.");
     });
 }
 
+
+// 🔵 Button Click
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+
+
+// 🔵 Enter Press Send
+document.getElementById("messageInput").addEventListener("keydown", function(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+});
+
+
+function appendMessage(sender, text) {
+
+    let chatBox = document.getElementById("chatBox");
+    let div = document.createElement("div");
+
+    div.className = sender === "user" ? "user-msg" : "bot-msg";
+    div.innerText = text;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 function appendMessage(sender, text) {
     let chatBox = document.getElementById("chatBox");
     let div = document.createElement("div");

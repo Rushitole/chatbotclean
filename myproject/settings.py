@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-1$%y6-+k_x1k)x7##9lo)s^d0c_+on7ef5!hjjc9#)qrz4w9hq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -128,3 +128,11 @@ STATIC_URL = 'static/'
 
 LOGIN_URL='/login/'
 LOGIN_REDIRECT_URL='/chat/'
+
+
+# TEMPLATES=[
+# 	{
+	
+# 		'APP_DIRS':True,
+#     }
+# ]
